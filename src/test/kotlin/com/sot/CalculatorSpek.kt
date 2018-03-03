@@ -54,12 +54,11 @@ class Calculator {
 
     fun add(numbers: String): Int {
         var delimiter = if (numbers.startsWith("//")) numbers.substring(2,3) else ","
-        var numbersWithoutDelimiter = numbers //todo ugly
-        if (numbers.startsWith("//")) {
-            numbersWithoutDelimiter = numbers.substring(3)
-        }
 
-        val strippedStringOfNumbers = numbersWithoutDelimiter.replace("\\n",delimiter)
+        val strippedStringOfNumbers =
+                if (numbers.startsWith("//")) numbers.substring(3).replace("\\n",delimiter)
+                else numbers.replace("\\n",delimiter)
+
         if(strippedStringOfNumbers.endsWith(delimiter))
             throw IllegalArgumentException("List of numbers cannot end with a delimiter")
 
