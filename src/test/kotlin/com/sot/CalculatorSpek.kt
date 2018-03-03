@@ -53,11 +53,9 @@ class CalculatorSpek : Spek({
 class Calculator {
 
     fun add(numbers: String): Int {
-        var delimiter = "," //todo replace with ternary operation
-
+        var delimiter = if (numbers.startsWith("//")) numbers.substring(2,3) else ","
         var numbersWithoutDelimiter = numbers //todo ugly
         if (numbers.startsWith("//")) {
-            delimiter = numbers.substring(2,3)
             numbersWithoutDelimiter = numbers.substring(3)
         }
 
