@@ -1,75 +1,83 @@
 package com.sot
 
-import org.jetbrains.spek.api.Spek
-import org.jetbrains.spek.api.dsl.describe
-import org.jetbrains.spek.api.dsl.it
+import io.kotlintest.matchers.shouldBe
+import io.kotlintest.matchers.shouldThrow
+import io.kotlintest.specs.StringSpec
 import java.util.*
-import com.natpryce.hamkrest.assertion.assert
-import com.natpryce.hamkrest.equalTo
 
 
-class CalculatorSpek : Spek({
+class CalculatorSpec : StringSpec({
 
-
-    describe("My calculator app"){
-
-        it("empty string will return 0"){
-            val calculator = Calculator()
-
-            assert.that(0, equalTo(calculator.add("")))
-        }
-        it("1 number will return the same number"){
-            val calculator = Calculator()
-            assert.that(3, equalTo(calculator.add("3")))
-        }
-        it("2 numbers will return the sum"){
-            val calculator = Calculator()
-            assert.that(5, equalTo(calculator.add("2,3")))
-        }
-        it("can handle an unknown amount of numbers"){
-            val calculator = Calculator()
-            assert.that(27, equalTo(calculator.add("2,5,9,7,4")))
-         }
-        //
-        it("can handle new lines between numbers (instead of commas)"){
-            val calculator = Calculator()
-            assert.that(6, equalTo(calculator.add("1\\n2,3")))
-        }
-        it("can't a list of numbers that ends with a delimiter"){
-            val calculator = Calculator()
-            try{
-                calculator.add("1,\\n")
-            }catch(e:IllegalArgumentException){
-                assert.that("List of numbers cannot end with a delimiter", equalTo(e.message))
-            }
-        }
-        it("can handle variable delimiters"){
-                val calculator = Calculator()
-                assert.that(3, equalTo(calculator.add("//;\\n1;2")))
-        }
+    "empty string will return 0" {
+        val calculator = Calculator()
+        calculator.add("") shouldBe 0
     }
+
+    "1 number will return the same number"{
+        val calculator = Calculator()
+        calculator.add("3") shouldBe 3
+    }
+
+    "2 numbers will return the sum" {
+        val calculator = Calculator()
+        calculator.add("2,3") shouldBe 5
+    }
+
+    "can handle an unknown amount of numbers"{
+        val calculator = Calculator()
+        calculator.add("2,5,9,7,4") shouldBe 27
+    }
+
+    "can handle new lines between numbers (instead of commas)"{
+        val calculator = Calculator()
+        calculator.add("1\\n2,3") shouldBe 6
+    }
+
+    "can't a list of numbers that ends with a delimiter"{
+        val exception = shouldThrow<IllegalArgumentException> {
+            val calculator = Calculator()
+            calculator.add("1,\\n")
+        }
+        exception.message shouldBe "List of numbers cannot end with a delimiter"
+    }
+
+    "can handle variable delimiters" {
+        val calculator = Calculator()
+        calculator.add("//;\\n1;2") shouldBe 3
+    }
+
+    "can't handle negative numbers and throws exception contain those numbers"
+    val exception = shouldThrow<IllegalArgumentException> {
+        val calculator = Calculator()
+        calculator.add("2,-5,9,-7,4")
+    }
+    exception.message shouldBe "negatives not allowed:-5 -7"
+
 })
 
 class Calculator {
 
     fun add(numbers: String): Int {
 
-        var delimiter = if (numbers.startsWith("//")) numbers.substring(2,3) else ","
-
-
-        if(numbers.endsWith(delimiter))
-            throw IllegalArgumentException("List of numbers cannot end with a delimiter")
+        var delimiter = if (numbers.startsWith("//")) numbers.substring(2, 3) else ","
 
 
         val strippedStringOfNumbers =
-                if (numbers.startsWith("//")) numbers.substring(3).replace("\\n",delimiter)
-                else numbers.replace("\\n",delimiter)
+                if (numbers.startsWith("//")) numbers.substring(3).replace("\\n", delimiter)
+                else numbers.replace("\\n", delimiter)
+
+        if (strippedStringOfNumbers.endsWith(delimiter))
+            throw IllegalArgumentException("List of numbers cannot end with a delimiter")
 
 
-        val listOfNumbers = StringTokenizer(strippedStringOfNumbers,delimiter)
+        val listOfNumbers = StringTokenizer(strippedStringOfNumbers, delimiter).toList()
 
-            var totalCount = 0
-                listOfNumbers.toList().forEach{totalCount += Integer.parseInt(it as String?)}
-            return return totalCount
-        }
+        /*  var negativeNumbers = listOfNumbers.filter { Integer.parseInt(it as String?) < 0 }
+
+          if(ne)*/
+
+        var totalCount = 0
+        listOfNumbers.forEach { totalCount += Integer.parseInt(it as String?) }
+        return totalCount
+    }
 }

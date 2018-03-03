@@ -24,14 +24,7 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    testCompile ('org.jetbrains.spek:spek-api:1.1.5') {
-        exclude group: 'org.jetbrains.kotlin'
-    }
-    testCompile 'com.natpryce:hamkrest:1.4.2.0'
-    testRuntime ('org.jetbrains.spek:spek-junit-platform-engine:1.1.5') {
-        exclude group: 'org.junit.platform'
-        exclude group: 'org.jetbrains.kotlin'
-    }
+    testCompile group: 'io.kotlintest', name: 'kotlintest', version: '2.0.7'
     testCompile 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0-alpha03'
 
 }
